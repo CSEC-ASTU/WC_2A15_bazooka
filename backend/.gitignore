@@ -1,3 +1,4 @@
 node_modules
 .version0
+.env
 utils
