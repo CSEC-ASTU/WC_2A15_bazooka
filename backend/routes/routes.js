@@ -14,5 +14,6 @@ route.post("/add", cardController.addTemplate);
 route.post("/save", cardController.saveCard);
 
 //  shareCard , sender_email, [recvs-email]
+route.post("/share", cardController.shareCard);
 
 module.exports = route;
