@@ -89,4 +89,42 @@ cardController.getTemplateById = async (req, res) => {
   }
 };
 
+cardController.saveCard = async (req, res) => {
+  const { image } = req.files;
+  const user_id = req.body.user_id;
+
+  if (!user_id || !image) {
+    return res.json({
+      success: false,
+      data: null,
+      error: { msg: "Please enter all fields!!" },
+    });
+  }
+
+  try {
+    let date = Date.now();
+    image.mv(__dirname + "/uploads/" + date + "." + image.name.split(".").pop());
+    const newCard = new Card({
+        user_id,
+    });
+    newCard.postcards.push("/uploads/" + date + "." + image.name.split(".").pop());
+    newCard.save();
+    res.json({
+        success: true,
+        data: newCard,
+        error: null,
+    });    
+  } catch (error) {
+    return res.json({
+      success: false,
+      data: null,
+      error: error.message,
+    });
+  }
+};
+
+cardController.shareCard = async (req, res) => {
+
+};
+
 module.exports = cardController;

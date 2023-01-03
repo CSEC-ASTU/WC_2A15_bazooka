@@ -11,6 +11,8 @@ route.get("/template/:id", cardController.getTemplateById);
 route.post("/add", cardController.addTemplate);
 
 // saveCard, [image]
+route.post("/save", cardController.saveCard);
+
 //  shareCard , sender_email, [recvs-email]
 
 module.exports = route;
