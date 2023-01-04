@@ -42,7 +42,7 @@
 
 ### Endpoints
 
-<b>Base url: </b>
+<b>Base url: https://card-generator.onrender.com/</b>
 
 | Endpoint       | Body/Params                               | Request type | URL               |
 |----------------|-------------------------------------------|--------------|-------------------|
