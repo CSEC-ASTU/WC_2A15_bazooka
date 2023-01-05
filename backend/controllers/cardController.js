@@ -2,6 +2,8 @@ const Card = require("../models/cardsModel");
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 const cardController = {};
 
 require("dotenv").config();
@@ -94,9 +96,9 @@ cardController.getAllTemplates = async (req, res) => {
 };
 
 cardController.getTemplateById = async (req, res) => {
-  const id = req.params.id;
+  const name = req.params.name;
 
-  if (!id) {
+  if (!name) {
     return res.json({
       success: false,
       data: null,
@@ -105,7 +107,7 @@ cardController.getTemplateById = async (req, res) => {
   }
 
   try {
-    res.sendFile(__dirname + `/templates/${id}.png`);
+    res.sendFile(__dirname + `/templates/${name}`);
   } catch (error) {
     return res.json({
       success: false,
@@ -165,12 +167,39 @@ cardController.shareCard = async (req, res) => {
   }
 
   try {
+    const oauth2Client = new OAuth2(
+      process.env.OAUTH_CLIENT_ID,
+      process.env.OAUTH_CLIENT_PWD,
+      "https://developers.google.com/oauthplayground"
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: process.env.OAUTH_CLIENT_ACCESS_TOKEN,
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          console.log(err);
+          reject("Failed to create access token :(");
+        }
+        resolve(token);
+      });
+    });
+
     let mailTransporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "bazookainc193@gmail.com",
-        pass: process.env.GOOGLE_PWD,
+        type: "OAuth2",
+        user: process.env.EMAIL,
+        accessToken,
+        clientId: process.env.OAUTH_CLIENT_ID,
+        clientSecret: process.env.OAUTH_CLIENT_PWD,
+        refreshToken: process.env.OAUTH_CLIENT_REFRESH_TOKEN,
       },
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     let mailDetails = {
@@ -195,17 +224,18 @@ cardController.shareCard = async (req, res) => {
       } else {
         res.json({
           success: true,
-          data: { msg: "Done!!"},
+          data: { msg: "Done!!" },
           error: null,
         });
       }
     });
   } catch (error) {
-    return res.json({
-      success: false,
-      data: null,
-      error: error.message,
-    });
+    console.log(error);
+    // return res.json({
+    //   success: false,
+    //   data: null,
+    //   error: error.message,
+    // });
   }
 };
 

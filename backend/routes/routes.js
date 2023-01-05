@@ -5,7 +5,7 @@ const route = require("express").Router();
 route.get("/templates", cardController.getAllTemplates);
 
 // getTemplateById
-route.get("/template/:id", cardController.getTemplateById);
+route.get("/template/:name", cardController.getTemplateById);
 
 // addTemplate
 route.post("/add", cardController.addTemplate);
